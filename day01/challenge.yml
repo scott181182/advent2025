@@ -1,0 +1,25 @@
+name: Advent of Code 2025 - Day 01
+parts:
+  - name: part1
+    cases:
+      - name: test
+        stdin: &test-input
+          file: test.txt
+        expected:
+          stdout: "3"
+      - name: input
+        stdin: &real-input
+          file: input.txt
+        expected:
+          stdout: "1074"
+  - name: part2
+    command: uiua run part2.ua
+    cases:
+      - name: test
+        stdin: *test-input
+        expected:
+          stdout: "6"
+      - name: input
+        stdin: *real-input
+        expected:
+          stdout: "6254"
