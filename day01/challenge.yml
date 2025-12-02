@@ -13,7 +13,6 @@ parts:
         expected:
           stdout: "1074"
   - name: part2
-    command: uiua run part2.ua
     cases:
       - name: test
         stdin: *test-input
