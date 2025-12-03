@@ -11,7 +11,7 @@ fn explore_patterns(start: usize, end: usize, pattern_length: usize) -> HashSet<
     let end_length = end.to_string().len();
 
     (start_length..=end_length)
-        .filter(|&n| n % pattern_length == 0)
+        .filter(|&n| n % pattern_length == 0 && n > pattern_length)
         .map(|n| n / pattern_length)
         .flat_map(|pattern_repetitions| {
             let mut invalid_ids = vec![];
