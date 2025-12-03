@@ -1,0 +1,13 @@
+{
+  "name": "advent2025",
+  "author": "Scott Fasone <scott181182@yahoo.com>",
+  "repository": "git@github.com:scott181182/advent2025.git",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
