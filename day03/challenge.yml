@@ -1,0 +1,24 @@
+name: Advent of Code 2025 - Day 03
+parts:
+  - name: part1
+    cases:
+      - name: test
+        stdin: &test-input
+          file: test.txt
+        expected:
+          stdout: "357"
+      - name: input
+        stdin: &real-input
+          file: input.txt
+        expected:
+          stdout: "17109"
+  - name: part2
+    cases:
+      - name: test
+        stdin: *test-input
+        expected:
+          stdout: "3121910778619"
+      - name: input
+        stdin: *real-input
+        expected:
+          stdout: "169347417057382"
