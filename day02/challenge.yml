@@ -1,6 +1,7 @@
 name: Advent of Code 2025 - Day 02
 parts:
   - name: part1
+    command: cargo run -q --bin part1
     cases:
       - name: test
         stdin: &test-input
@@ -13,6 +14,7 @@ parts:
         expected:
           stdout: "13108371860"
   - name: part2
+    command: cargo run -q --bin part2
     cases:
       - name: test
         stdin: *test-input
@@ -23,6 +25,7 @@ parts:
         expected:
           stdout: "22471660255"
   - name: part3
+    command: cargo run -q --bin part2
     cases:
       - name: u32
         stdin:

@@ -1,24 +1,31 @@
 name: Advent of Code 2025 - Day 03
 parts:
   - name: part1
+    command: bun run ./part1.ts
     cases:
       - name: test
+        environment: &no-color
+          NO_COLOR: "1"
         stdin: &test-input
           file: test.txt
         expected:
           stdout: "357"
       - name: input
+        environment: *no-color
         stdin: &real-input
           file: input.txt
         expected:
           stdout: "17109"
   - name: part2
+    command: bun run ./part2.ts
     cases:
       - name: test
+        environment: *no-color
         stdin: *test-input
         expected:
           stdout: "3121910778619"
       - name: input
+        environment: *no-color
         stdin: *real-input
         expected:
           stdout: "169347417057382"

@@ -1,6 +1,8 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/scott181182/challenge-script/refs/heads/main/challenge.schema.json
 name: Advent of Code 2025 - Day 01
 parts:
   - name: part1
+    command: cargo run -q --bin part1
     cases:
       - name: test
         stdin: &test-input
@@ -13,6 +15,7 @@ parts:
         expected:
           stdout: "1074"
   - name: part2
+    command: cargo run -q --bin part2
     cases:
       - name: test
         stdin: *test-input
