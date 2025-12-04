@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/scott181182/challenge-script/refs/heads/main/challenge.schema.json
+name: Advent of Code 2025 - Day 04
+environment:
+  PYTHONPATH: ..
+parts:
+  - name: part1
+    command: python -m day04.part1
+    cases:
+      - name: test
+        stdin: &test-input
+          file: test.txt
+        expected:
+          stdout: "13"
+      - name: input
+        stdin: &real-input
+          file: input.txt
+        expected:
+          stdout: "1411"
+  - name: part2
+    command: python -m day04.part2
+    cases:
+      - name: test
+        stdin: *test-input
+        expected:
+          stdout: "43"
+      - name: input
+        stdin: *real-input
+        expected:
+          stdout: "8557"
