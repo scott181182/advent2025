@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, collections::HashSet};
+use std::{borrow::Borrow, cmp::Reverse, collections::HashSet};
 
 use common::space::vector::Vector3;
 use priority_queue::PriorityQueue;
@@ -138,10 +138,10 @@ impl Octree {
         }
     }
 
-    pub fn find_closest_point(
+    pub fn find_closest_point<P: Borrow<Point> + Eq + std::hash::Hash>(
         &self,
         point: &Point,
-        ignore: &HashSet<Point>,
+        ignore: &HashSet<P>,
     ) -> Option<(&Point, usize)> {
         let mut stack = PriorityQueue::<&OctreeNode, Reverse<usize>>::new();
         stack.push(&self.node, Reverse(self.bbox.dist2(point)));

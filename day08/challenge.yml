@@ -27,4 +27,4 @@ parts:
       input:
         stdin: *real-input
         expected:
-          stdout: ""
+          stdout: "8141888143"
