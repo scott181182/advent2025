@@ -1,14 +1,13 @@
-use common::space::vector::Vector3;
+use common::space::vector::Vector3i;
 
-pub type Point = Vector3<i64>;
-pub type Input = Vec<Point>;
+pub type Input = Vec<Vector3i>;
 
 pub fn parse_input(input_str: &str) -> Input {
     input_str
         .lines()
         .map(|line| {
             let mut parts = line.split(",").map(str::parse::<i64>).map(Result::unwrap);
-            Vector3::new(
+            Vector3i::new(
                 parts.next().unwrap(),
                 parts.next().unwrap(),
                 parts.next().unwrap(),

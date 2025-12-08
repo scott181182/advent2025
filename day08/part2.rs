@@ -1,20 +1,21 @@
 use std::collections::{HashMap, HashSet};
 
 use common::run;
+use common::space::vector::Vector3i;
 use indexmap::IndexMap;
 
 mod input;
 mod octree;
-use crate::input::{Input, Point, parse_input};
+use crate::input::{Input, parse_input};
 use crate::octree::Octree;
 
 fn solve_part2(points: Input) -> i64 {
     let ot = Octree::from_vec(points.clone());
-    let mut edge_map: HashMap<&Point, HashSet<&Point>> = points
+    let mut edge_map: HashMap<&Vector3i, HashSet<&Vector3i>> = points
         .iter()
         .map(|p| (p, vec![p].into_iter().collect()))
         .collect();
-    let mut closest_map: IndexMap<&Point, (&Point, usize)> = points
+    let mut closest_map: IndexMap<&Vector3i, (&Vector3i, usize)> = points
         .iter()
         .map(|p| {
             (

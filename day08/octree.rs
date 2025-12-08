@@ -1,25 +1,23 @@
 use std::{borrow::Borrow, cmp::Reverse, collections::HashSet};
 
-use common::space::vector::Vector3;
+use common::space::vector::Vector3i;
 use priority_queue::PriorityQueue;
-
-use crate::input::Point;
 
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub struct BoundingBox {
-    pub min: Point,
-    pub max: Point,
+    pub min: Vector3i,
+    pub max: Vector3i,
 }
 impl BoundingBox {
-    pub fn new(min: Point, max: Point) -> Self {
+    pub fn new(min: Vector3i, max: Vector3i) -> Self {
         Self { min, max }
     }
 
-    pub fn midpoint(&self) -> Point {
+    pub fn midpoint(&self) -> Vector3i {
         (&self.min + &self.max) / 2
     }
 
-    pub fn dist2(&self, point: &Point) -> usize {
+    pub fn dist2(&self, point: &Vector3i) -> usize {
         let dx = if point.x < self.min.x {
             self.min.x - point.x
         } else if point.x > self.max.x {
@@ -47,7 +45,7 @@ impl BoundingBox {
 #[derive(Debug, Hash, PartialEq, Eq)]
 pub enum OctreeNode {
     Empty,
-    Leaf(Point),
+    Leaf(Vector3i),
     Internal(Box<[Octree; 8]>),
 }
 impl OctreeNode {
@@ -56,28 +54,28 @@ impl OctreeNode {
         OctreeNode::Internal(Box::new([
             Octree::new(BoundingBox::new(bbox.min.clone(), mid.clone())),
             Octree::new(BoundingBox::new(
-                Vector3::new(bbox.min.x, bbox.min.y, mid.z),
-                Vector3::new(mid.x, mid.y, bbox.max.z),
+                Vector3i::new(bbox.min.x, bbox.min.y, mid.z),
+                Vector3i::new(mid.x, mid.y, bbox.max.z),
             )),
             Octree::new(BoundingBox::new(
-                Vector3::new(bbox.min.x, mid.y, bbox.min.z),
-                Vector3::new(mid.x, bbox.max.y, mid.z),
+                Vector3i::new(bbox.min.x, mid.y, bbox.min.z),
+                Vector3i::new(mid.x, bbox.max.y, mid.z),
             )),
             Octree::new(BoundingBox::new(
-                Vector3::new(bbox.min.x, mid.y, mid.z),
-                Vector3::new(mid.x, bbox.max.y, bbox.max.z),
+                Vector3i::new(bbox.min.x, mid.y, mid.z),
+                Vector3i::new(mid.x, bbox.max.y, bbox.max.z),
             )),
             Octree::new(BoundingBox::new(
-                Vector3::new(mid.x, bbox.min.y, bbox.min.z),
-                Vector3::new(bbox.max.x, mid.y, mid.z),
+                Vector3i::new(mid.x, bbox.min.y, bbox.min.z),
+                Vector3i::new(bbox.max.x, mid.y, mid.z),
             )),
             Octree::new(BoundingBox::new(
-                Vector3::new(mid.x, bbox.min.y, mid.z),
-                Vector3::new(bbox.max.x, mid.y, bbox.max.z),
+                Vector3i::new(mid.x, bbox.min.y, mid.z),
+                Vector3i::new(bbox.max.x, mid.y, bbox.max.z),
             )),
             Octree::new(BoundingBox::new(
-                Vector3::new(mid.x, mid.y, bbox.min.z),
-                Vector3::new(bbox.max.x, bbox.max.y, mid.z),
+                Vector3i::new(mid.x, mid.y, bbox.min.z),
+                Vector3i::new(bbox.max.x, bbox.max.y, mid.z),
             )),
             Octree::new(BoundingBox::new(mid, bbox.max.clone())),
         ]))
@@ -96,16 +94,16 @@ impl Octree {
             node: OctreeNode::Empty,
         }
     }
-    pub fn from_vec(points: Vec<Point>) -> Self {
+    pub fn from_vec(points: Vec<Vector3i>) -> Self {
         let (min, max) = points.iter().fold(
             (
-                Vector3::new(i64::MAX, i64::MAX, i64::MAX),
-                Vector3::new(i64::MIN, i64::MIN, i64::MIN),
+                Vector3i::new(i64::MAX, i64::MAX, i64::MAX),
+                Vector3i::new(i64::MIN, i64::MIN, i64::MIN),
             ),
             |(min_acc, max_acc), p| {
                 (
-                    Vector3::new(min_acc.x.min(p.x), min_acc.y.min(p.y), min_acc.z.min(p.z)),
-                    Vector3::new(max_acc.x.max(p.x), max_acc.y.max(p.y), max_acc.z.max(p.z)),
+                    Vector3i::new(min_acc.x.min(p.x), min_acc.y.min(p.y), min_acc.z.min(p.z)),
+                    Vector3i::new(max_acc.x.max(p.x), max_acc.y.max(p.y), max_acc.z.max(p.z)),
                 )
             },
         );
@@ -117,7 +115,7 @@ impl Octree {
         octree
     }
 
-    pub fn insert(&mut self, point: Point) {
+    pub fn insert(&mut self, point: Vector3i) {
         let mid = self.bbox.midpoint();
         match &mut self.node {
             OctreeNode::Internal(children) => {
@@ -138,11 +136,11 @@ impl Octree {
         }
     }
 
-    pub fn find_closest_point<P: Borrow<Point> + Eq + std::hash::Hash>(
+    pub fn find_closest_point<P: Borrow<Vector3i> + Eq + std::hash::Hash>(
         &self,
-        point: &Point,
+        point: &Vector3i,
         ignore: &HashSet<P>,
-    ) -> Option<(&Point, usize)> {
+    ) -> Option<(&Vector3i, usize)> {
         let mut stack = PriorityQueue::<&OctreeNode, Reverse<usize>>::new();
         stack.push(&self.node, Reverse(self.bbox.dist2(point)));
         while !stack.is_empty() {
@@ -186,27 +184,27 @@ mod tests {
     #[test]
     fn test_octree_octant_create_ordering() {
         let node = OctreeNode::new_internal(&BoundingBox::new(
-            Vector3::new(0, 0, 0),
-            Vector3::new(8, 8, 8),
+            Vector3i::new(0, 0, 0),
+            Vector3i::new(8, 8, 8),
         ));
 
         if let OctreeNode::Internal(children) = node {
-            assert_eq!(children[0].bbox.min, Vector3::new(0, 0, 0));
-            assert_eq!(children[0].bbox.max, Vector3::new(4, 4, 4));
-            assert_eq!(children[1].bbox.min, Vector3::new(0, 0, 4));
-            assert_eq!(children[1].bbox.max, Vector3::new(4, 4, 8));
-            assert_eq!(children[2].bbox.min, Vector3::new(0, 4, 0));
-            assert_eq!(children[2].bbox.max, Vector3::new(4, 8, 4));
-            assert_eq!(children[3].bbox.min, Vector3::new(0, 4, 4));
-            assert_eq!(children[3].bbox.max, Vector3::new(4, 8, 8));
-            assert_eq!(children[4].bbox.min, Vector3::new(4, 0, 0));
-            assert_eq!(children[4].bbox.max, Vector3::new(8, 4, 4));
-            assert_eq!(children[5].bbox.min, Vector3::new(4, 0, 4));
-            assert_eq!(children[5].bbox.max, Vector3::new(8, 4, 8));
-            assert_eq!(children[6].bbox.min, Vector3::new(4, 4, 0));
-            assert_eq!(children[6].bbox.max, Vector3::new(8, 8, 4));
-            assert_eq!(children[7].bbox.min, Vector3::new(4, 4, 4));
-            assert_eq!(children[7].bbox.max, Vector3::new(8, 8, 8));
+            assert_eq!(children[0].bbox.min, Vector3i::new(0, 0, 0));
+            assert_eq!(children[0].bbox.max, Vector3i::new(4, 4, 4));
+            assert_eq!(children[1].bbox.min, Vector3i::new(0, 0, 4));
+            assert_eq!(children[1].bbox.max, Vector3i::new(4, 4, 8));
+            assert_eq!(children[2].bbox.min, Vector3i::new(0, 4, 0));
+            assert_eq!(children[2].bbox.max, Vector3i::new(4, 8, 4));
+            assert_eq!(children[3].bbox.min, Vector3i::new(0, 4, 4));
+            assert_eq!(children[3].bbox.max, Vector3i::new(4, 8, 8));
+            assert_eq!(children[4].bbox.min, Vector3i::new(4, 0, 0));
+            assert_eq!(children[4].bbox.max, Vector3i::new(8, 4, 4));
+            assert_eq!(children[5].bbox.min, Vector3i::new(4, 0, 4));
+            assert_eq!(children[5].bbox.max, Vector3i::new(8, 4, 8));
+            assert_eq!(children[6].bbox.min, Vector3i::new(4, 4, 0));
+            assert_eq!(children[6].bbox.max, Vector3i::new(8, 8, 4));
+            assert_eq!(children[7].bbox.min, Vector3i::new(4, 4, 4));
+            assert_eq!(children[7].bbox.max, Vector3i::new(8, 8, 8));
         } else {
             panic!("Expected Internal node");
         }
@@ -214,15 +212,15 @@ mod tests {
     #[test]
     fn test_octree_octant_insert_ordering() {
         let mut node = Octree::new(BoundingBox::new(
-            Vector3::new(0, 0, 0),
-            Vector3::new(8, 8, 8),
+            Vector3i::new(0, 0, 0),
+            Vector3i::new(8, 8, 8),
         ));
 
         for i in 0..8 {
             let x = (i >> 2) * 4 + 2;
             let y = ((i >> 1) & 1) * 4 + 2;
             let z = (i & 1) * 4 + 2;
-            node.insert(Vector3::new(x, y, z));
+            node.insert(Vector3i::new(x, y, z));
         }
 
         let OctreeNode::Internal(children) = node.node else {
@@ -239,7 +237,7 @@ mod tests {
 
             assert_eq!(
                 p,
-                Vector3::new(expected_x as i64, expected_y as i64, expected_z as i64)
+                Vector3i::new(expected_x as i64, expected_y as i64, expected_z as i64)
             );
         }
     }
