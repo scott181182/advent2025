@@ -15,7 +15,7 @@ parts:
         stdin: &real-input
           file: input.txt
         expected:
-          stdout: ""
+          stdout: "46398"
         arguments:
           - "1000"
   part2:
@@ -23,7 +23,7 @@ parts:
       test:
         stdin: *test-input
         expected:
-          stdout: ""
+          stdout: "25272"
       input:
         stdin: *real-input
         expected:
