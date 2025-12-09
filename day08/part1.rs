@@ -2,13 +2,12 @@ use fxhash::{FxHashMap as HashMap, FxHashSet as HashSet};
 use std::cmp::Reverse;
 
 use common::run_with_args;
+use common::space::octree::Octree;
 use common::space::vector::Vector3i;
 use priority_queue::PriorityQueue;
 
 mod input;
-mod octree;
 use crate::input::{Input, parse_args, parse_input};
-use crate::octree::Octree;
 
 const TOP_COMPONENTS: usize = 3;
 

@@ -3,13 +3,12 @@ use std::cmp::Reverse;
 use fxhash::{FxHashMap as HashMap, FxHashSet as HashSet};
 
 use common::run;
+use common::space::octree::Octree;
 use common::space::vector::Vector3i;
 use priority_queue::PriorityQueue;
 
 mod input;
-mod octree;
 use crate::input::{Input, parse_input};
-use crate::octree::Octree;
 
 fn solve_part2(points: Input) -> i64 {
     let ot = Octree::from_vec(points.clone());

@@ -1,6 +1,6 @@
 use std::cmp::Reverse;
 
-use common::space::vector::Vector3i;
+use super::vector::Vector3i;
 use priority_queue::PriorityQueue;
 
 #[derive(Debug, Hash, PartialEq, Eq)]
