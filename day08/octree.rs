@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, cmp::Reverse, collections::HashSet};
+use std::cmp::Reverse;
 
 use common::space::vector::Vector3i;
 use priority_queue::PriorityQueue;
@@ -82,7 +82,7 @@ impl OctreeNode {
     }
 }
 
-#[derive(Debug, Hash, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Octree {
     bbox: BoundingBox,
     node: OctreeNode,
@@ -136,22 +136,40 @@ impl Octree {
         }
     }
 
-    pub fn find_closest_point<P: Borrow<Vector3i> + Eq + std::hash::Hash>(
-        &self,
-        point: &Vector3i,
-        ignore: &HashSet<P>,
-    ) -> Option<(&Vector3i, usize)> {
-        let mut stack = PriorityQueue::<&OctreeNode, Reverse<usize>>::new();
-        stack.push(&self.node, Reverse(self.bbox.dist2(point)));
-        while !stack.is_empty() {
-            let node = stack.pop().unwrap();
+    pub fn closest_points<'a>(&'a self, point: Vector3i) -> ClosestPoints<'a> {
+        ClosestPoints::new(self, point)
+    }
+}
+impl std::hash::Hash for Octree {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.bbox.hash(state);
+    }
+}
+
+pub struct ClosestPoints<'a> {
+    point: Vector3i,
+    stack: PriorityQueue<&'a OctreeNode, Reverse<usize>>,
+}
+impl<'a> ClosestPoints<'a> {
+    pub fn new(tree: &'a Octree, point: Vector3i) -> Self {
+        let mut stack = PriorityQueue::new();
+        stack.push(&tree.node, Reverse(tree.bbox.dist2(&point)));
+
+        Self { point, stack }
+    }
+}
+impl<'a> Iterator for ClosestPoints<'a> {
+    type Item = (&'a Vector3i, usize);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(node) = self.stack.pop() {
             match node.0 {
                 OctreeNode::Empty => continue,
                 OctreeNode::Leaf(p) => {
-                    if ignore.contains(p) {
+                    if p == &self.point {
                         continue;
                     } else {
-                        return Some((p, point.dist2(p) as usize));
+                        return Some((p, self.point.dist2(p) as usize));
                     }
                 }
                 OctreeNode::Internal(children) => {
@@ -159,14 +177,15 @@ impl Octree {
                         match &child.node {
                             OctreeNode::Empty => continue,
                             OctreeNode::Leaf(p) => {
-                                if ignore.contains(p) {
+                                if p == &self.point {
                                     continue;
                                 } else {
-                                    stack.push(&child.node, Reverse(point.dist2(p) as usize));
+                                    self.stack
+                                        .push(&child.node, Reverse(self.point.dist2(p) as usize));
                                 }
                             }
                             n => {
-                                stack.push(n, Reverse(child.bbox.dist2(point)));
+                                self.stack.push(n, Reverse(child.bbox.dist2(&self.point)));
                             }
                         }
                     }

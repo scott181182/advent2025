@@ -1,8 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::cmp::Reverse;
+
+use fxhash::{FxHashMap as HashMap, FxHashSet as HashSet};
 
 use common::run;
 use common::space::vector::Vector3i;
-use indexmap::IndexMap;
+use priority_queue::PriorityQueue;
 
 mod input;
 mod octree;
@@ -11,47 +13,40 @@ use crate::octree::Octree;
 
 fn solve_part2(points: Input) -> i64 {
     let ot = Octree::from_vec(points.clone());
-    let mut edge_map: HashMap<&Vector3i, HashSet<&Vector3i>> = points
+    let mut nearest_iters = points
         .iter()
-        .map(|p| (p, vec![p].into_iter().collect()))
+        .map(|p| (p, ot.closest_points(p.clone())))
+        .collect::<HashMap<_, _>>();
+    let mut edge_map: HashMap<Vector3i, HashSet<Vector3i>> = points
+        .iter()
+        .map(|p| (p.clone(), vec![p.clone()].into_iter().collect()))
         .collect();
-    let mut closest_map: IndexMap<&Vector3i, (&Vector3i, usize)> = points
+    let mut closest_map: PriorityQueue<(&Vector3i, &Vector3i), Reverse<usize>> = points
         .iter()
         .map(|p| {
-            (
-                p,
-                ot.find_closest_point(p, edge_map.get(p).unwrap()).unwrap(),
-            )
+            let (q, d) = nearest_iters.get_mut(p).unwrap().next().unwrap();
+            ((p, q), Reverse(d))
         })
         .collect();
 
-    let mut main_graph = HashSet::new();
+    let mut main_graph = HashSet::default();
     let mut last_connection = None;
 
     while main_graph.len() < points.len() {
-        closest_map.sort_by(|_, a, _, b| a.1.cmp(&b.1));
+        // Closest edges will be the top two node matches.
+        let ((a, b), _) = closest_map.pop().unwrap();
+        let _ = closest_map.pop().unwrap();
 
-        let (a, b) = {
-            let (a, (b, _)) = closest_map.first().unwrap();
+        edge_map.get_mut(a).unwrap().insert(b.clone());
+        edge_map.get_mut(b).unwrap().insert(a.clone());
 
-            let a = *a;
-            let b = *b;
+        let a_next = nearest_iters.get_mut(a).unwrap().next().unwrap();
+        let b_next = nearest_iters.get_mut(b).unwrap().next().unwrap();
 
-            (a, b)
-        };
+        closest_map.push((a, a_next.0), Reverse(a_next.1));
+        closest_map.push((b, b_next.0), Reverse(b_next.1));
 
-        edge_map.get_mut(&a).unwrap().insert(b);
-        edge_map.get_mut(&b).unwrap().insert(a);
-
-        closest_map.insert(
-            a,
-            ot.find_closest_point(a, edge_map.get(a).unwrap()).unwrap(),
-        );
-        closest_map.insert(
-            b,
-            ot.find_closest_point(b, edge_map.get(b).unwrap()).unwrap(),
-        );
-
+        // Insert into main graph
         main_graph.insert(a);
         main_graph.insert(b);
 

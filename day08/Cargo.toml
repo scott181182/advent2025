@@ -13,5 +13,5 @@ path = "part2.rs"
 
 [dependencies]
 common = { path = "../common" }
-indexmap = "2.12.1"
+fxhash = "0.2.1"
 priority-queue = "2.7.0"
