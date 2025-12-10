@@ -15,13 +15,13 @@ parts:
         stdin: &real-input
           file: input.txt
         expected:
-          stdout: ""
+          stdout: "507"
   part2:
     cases:
       test:
         stdin: *test-input
         expected:
-          stdout: ""
+          stdout: "33"
       input:
         stdin: *real-input
         expected:
