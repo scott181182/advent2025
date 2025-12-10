@@ -9,6 +9,7 @@
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
     },
     "cSpell.words": [
+        "joltage",
         "Octree"
     ]
 }
