@@ -1,6 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/scott181182/challenge-script/refs/heads/main/challenge.schema.json
 name: Advent of Code 2025 - Day 09
-command: ["cargo", "run", "-q", "--bin", "{{part}}"]
+command: ["python", "-m", "day09.{{part}}"]
+environment:
+  PYTHONPATH: ..
 parts:
   part1:
     cases:
@@ -13,14 +15,14 @@ parts:
         stdin: &real-input
           file: input.txt
         expected:
-          stdout: ""
+          stdout: "4786902990"
   part2:
     cases:
       test:
         stdin: *test-input
         expected:
-          stdout: ""
+          stdout: "24"
       input:
         stdin: *real-input
         expected:
-          stdout: ""
+          stdout: "1571016172"
