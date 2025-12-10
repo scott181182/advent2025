@@ -25,4 +25,4 @@ parts:
       input:
         stdin: *real-input
         expected:
-          stdout: ""
+          stdout: "18981"
