@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/scott181182/challenge-script/refs/heads/main/challenge.schema.json
+name: Advent of Code 2025 - Day 11
+command: ["bun", "run", "{{part}}.ts"]
+environment:
+  NO_COLOR: "1"
+parts:
+  part1:
+    cases:
+      test:
+        stdin:
+          file: test1.txt
+        expected:
+          stdout: "5"
+      input:
+        stdin: &real-input
+          file: input.txt
+        expected:
+          stdout: "690"
+  part2:
+    cases:
+      test:
+        stdin:
+          file: test2.txt
+        expected:
+          stdout: "2"
+      input:
+        stdin: *real-input
+        expected:
+          stdout: "557332758684000"

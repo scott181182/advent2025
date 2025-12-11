@@ -8,7 +8,12 @@
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
     },
+    "cSpell.ignorePaths": [
+        "day*/test.txt",
+        "day*/input.txt"
+    ],
     "cSpell.words": [
+        "heapify",
         "joltage",
         "Octree"
     ]
