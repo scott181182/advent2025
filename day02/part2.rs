@@ -3,7 +3,7 @@ use std::collections::HashSet;
 mod input;
 
 use common::run;
-use input::{parse_input, Input};
+use input::{Input, parse_input};
 
 fn explore_patterns(start: usize, end: usize, pattern_length: usize) -> HashSet<usize> {
     let start_str = start.to_string();
@@ -16,15 +16,19 @@ fn explore_patterns(start: usize, end: usize, pattern_length: usize) -> HashSet<
         .flat_map(|pattern_repetitions| {
             let mut invalid_ids = vec![];
 
-            let (mut candidate_pattern, mut candidate_int) = if pattern_repetitions * pattern_length == start_length {
-                let pat = &start_str[..pattern_length];
-                (pat.to_string(), pat.parse::<usize>().unwrap())
-            } else {
-                let pat = format!("1{}", "0".repeat(pattern_length - 1));
-                (pat.clone(), pat.parse::<usize>().unwrap())
-            };
+            let (mut candidate_pattern, mut candidate_int) =
+                if pattern_repetitions * pattern_length == start_length {
+                    let pat = &start_str[..pattern_length];
+                    (pat.to_string(), pat.parse::<usize>().unwrap())
+                } else {
+                    let pat = format!("1{}", "0".repeat(pattern_length - 1));
+                    (pat.clone(), pat.parse::<usize>().unwrap())
+                };
 
-            let mut candidate = candidate_pattern.repeat(pattern_repetitions).parse::<usize>().unwrap();
+            let mut candidate = candidate_pattern
+                .repeat(pattern_repetitions)
+                .parse::<usize>()
+                .unwrap();
 
             while candidate <= end {
                 if candidate >= start {
@@ -36,7 +40,10 @@ fn explore_patterns(start: usize, end: usize, pattern_length: usize) -> HashSet<
                 if candidate_pattern.len() > pattern_length {
                     break;
                 }
-                candidate = candidate_pattern.repeat(pattern_repetitions).parse::<usize>().unwrap();
+                candidate = candidate_pattern
+                    .repeat(pattern_repetitions)
+                    .parse::<usize>()
+                    .unwrap();
             }
             invalid_ids
         })
@@ -47,17 +54,18 @@ fn find_invalid_ids(start: usize, end: usize) -> HashSet<usize> {
     let end_str = end.to_string();
     let longest_pattern = end_str.len() / 2;
 
-    (1..=longest_pattern).into_iter()
+    (1..=longest_pattern)
         .flat_map(|pattern_length| explore_patterns(start, end, pattern_length))
         .collect()
 }
 
 fn solve_part2(id_ranges: Input) -> i64 {
-	id_ranges.into_iter()
-		.flat_map(|(start, end)| find_invalid_ids(start, end))
-		.sum::<usize>() as i64
+    id_ranges
+        .into_iter()
+        .flat_map(|(start, end)| find_invalid_ids(start, end))
+        .sum::<usize>() as i64
 }
 
 fn main() {
-	run(parse_input, solve_part2);
+    run(parse_input, solve_part2);
 }

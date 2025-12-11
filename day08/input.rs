@@ -16,6 +16,8 @@ pub fn parse_input(input_str: &str) -> Input {
         .collect()
 }
 
+// This is only dead code for the `part2` binary.
+#[allow(dead_code)]
 pub fn parse_args(args: Vec<String>) -> usize {
     args[1]
         .parse::<usize>()
